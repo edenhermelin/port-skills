@@ -232,6 +232,8 @@ Requires the [Claude Managed Agents integration](https://docs.port.io/agent-mana
 | `update_agent`              | Updates an existing agent's name, model, system prompt, or config. At least one field besides `agentId` must be set. |
 | `archive_agent`             | Permanently archives an agent. Irreversible.                                                                         |
 | `create_environment`        | Creates a new Claude managed environment and registers it in the catalog.                                            |
+| `update_environment`        | Updates an existing environment's name, description, scope, or config. At least one field besides `environmentId` must be set. |
+| `delete_environment`        | Permanently hard-deletes a Claude managed environment and removes it from the catalog. Irreversible.                 |
 
 **`create_agent` properties**
 
@@ -281,6 +283,28 @@ At least one of `name`, `model`, `systemPrompt`, or `config` must be set.
 | `config`      | Optional. Object passed to the Anthropic environments API (e.g. container settings). |
 
 Node output: `environmentId` — the ID of the newly created environment. Pass it to a `trigger_agent` node to start a session.
+
+**`update_environment` properties**
+
+| Property        | Description                                                                          |
+| --------------- | ------------------------------------------------------------------------------------ |
+| `environmentId` | Required. The environment to update.                                                 |
+| `name`          | Optional. New environment name.                                                      |
+| `description`   | Optional. New description.                                                           |
+| `scope`         | Optional. New scope identifier.                                                      |
+| `config`        | Optional. Object merged into the environment's config.                               |
+
+At least one of `name`, `description`, `scope`, or `config` must be set.
+
+Node output: `environmentId` — echoed back for use in downstream nodes.
+
+**`delete_environment` properties**
+
+| Property        | Description                                    |
+| --------------- | ---------------------------------------------- |
+| `environmentId` | Required. The environment to delete.           |
+
+Concurrent deletes on the same environment are serialized automatically.
 
 ```json
 {
