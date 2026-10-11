@@ -1,6 +1,6 @@
 ---
 name: port-workflows
-description: "Build Port workflows: node-based automations made of triggers (self-service forms, context lake events), action nodes (webhook, upsert entity, GitHub/GitLab/Azure DevOps integration actions, Kafka, Cursor Agent, AI), condition and input nodes, JQ templating between nodes, and self-service trigger permissions, authored as workflow JSON against the Port API. Use when asked to create a Port workflow, add a trigger to a workflow, add an action node, wire up a self-service workflow, add branching with a condition node, add an approval step to a workflow, build an event-driven automation in Port, or write workflow JSON. Port workflows are Port's own nodes-and-edges automation graph, not a CI/CD pipeline file like GitHub Actions."
+description: "Build Port workflows: node-based automations made of triggers (self-service forms, context lake events), action nodes (webhook, upsert entity, GitHub/GitLab/Azure DevOps/Claude managed agents integration actions, Kafka, Cursor Agent, AI), condition and input nodes, JQ templating between nodes, and self-service trigger permissions, authored as workflow JSON against the Port API. Use when asked to create a Port workflow, add a trigger to a workflow, add an action node, wire up a self-service workflow, add branching with a condition node, add an approval step to a workflow, build an event-driven automation in Port, or write workflow JSON. Port workflows are Port's own nodes-and-edges automation graph, not a CI/CD pipeline file like GitHub Actions."
 license: MIT
 compatibility: "Claude Code, Cursor, Codex CLI, GitHub Copilot"
 metadata:
@@ -82,8 +82,9 @@ Precondition: trigger is defined.
 Action: add one node per step. See
 [references/node-types.md](references/node-types.md) for the full field
 reference and JSON shape of every node type: `WEBHOOK`, `UPSERT_ENTITY`,
-`INTEGRATION_ACTION`, `KAFKA`, `CURSOR_AGENT`, `AI_AGENT`, `AI`, `CONDITION`,
-`INPUT`. Reference upstream data with JQ templates, see
+`INTEGRATION_ACTION` (GitHub, Claude managed agents, and others), `KAFKA`,
+`CURSOR_AGENT`, `AI_AGENT`, `AI`, `CONDITION`, `INPUT`. Reference upstream
+data with JQ templates, see
 [references/data-flow.md](references/data-flow.md).
 Fallback: if a step just needs to call an HTTP API, prefer `WEBHOOK` over
 building a custom integration, and prefer `UPSERT_ENTITY` over a raw

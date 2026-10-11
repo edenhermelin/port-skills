@@ -23,8 +23,17 @@ Runs on demand when a user submits a form.
     "permissions": { "roles": ["Member"] },
     "userInputs": {
       "properties": {
-        "service": { "type": "string", "format": "entity", "blueprint": "service", "title": "Service" },
-        "environment": { "type": "string", "enum": ["staging", "production"], "title": "Environment" }
+        "service": {
+          "type": "string",
+          "format": "entity",
+          "blueprint": "service",
+          "title": "Service"
+        },
+        "environment": {
+          "type": "string",
+          "enum": ["staging", "production"],
+          "title": "Environment"
+        }
       },
       "required": ["service", "environment"],
       "order": ["service", "environment"]
@@ -33,14 +42,14 @@ Runs on demand when a user submits a form.
 }
 ```
 
-| Field | Description |
-|---|---|
-| `userInputs.properties` | Form fields. Types: `string`, `number`, `boolean`, `object`, `array`. String formats: `entity` (needs `blueprint`), `team`, `user`, `url`, `email`, `date-time`, `yaml`. |
-| `userInputs.required` | Required field keys. |
-| `permissions` | Who can see and execute this trigger. See [permissions.md](permissions.md). Omitted = Admin only. |
-| `contexts` | Optional array surfacing the trigger beyond the self-service page. `{ "on": "CREATE_ENTITY", "blueprintIdentifier": "..." }` replaces a blueprint's default entity-creation form. `{ "on": "ENTITY", "userInput": "..." }` adds the trigger to the bolt (⚡) menu on matching entities, pre-filling that input; the referenced `userInput` must be an entity-format field, and each `ENTITY` context must reference a different input. |
-| `variant` | `"DEFAULT"` (omit) or `"ALERT"` (red, destructive styling in the bolt menu, for deletions/rollbacks). Presentation only. |
-| `published` | Default `true`. Set `false` to disable the trigger without deleting it. |
+| Field                   | Description                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `userInputs.properties` | Form fields. Types: `string`, `number`, `boolean`, `object`, `array`. String formats: `entity` (needs `blueprint`), `team`, `user`, `url`, `email`, `date-time`, `yaml`.                                                                                                                                                                                                                                                               |
+| `userInputs.required`   | Required field keys.                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| `permissions`           | Who can see and execute this trigger. See [permissions.md](permissions.md). Omitted = Admin only.                                                                                                                                                                                                                                                                                                                                      |
+| `contexts`              | Optional array surfacing the trigger beyond the self-service page. `{ "on": "CREATE_ENTITY", "blueprintIdentifier": "..." }` replaces a blueprint's default entity-creation form. `{ "on": "ENTITY", "userInput": "..." }` adds the trigger to the bolt (⚡) menu on matching entities, pre-filling that input; the referenced `userInput` must be an entity-format field, and each `ENTITY` context must reference a different input. |
+| `variant`               | `"DEFAULT"` (omit) or `"ALERT"` (red, destructive styling in the bolt menu, for deletions/rollbacks). Presentation only.                                                                                                                                                                                                                                                                                                               |
+| `published`             | Default `true`. Set `false` to disable the trigger without deleting it.                                                                                                                                                                                                                                                                                                                                                                |
 
 Outputs: user inputs are stored directly, `{{ .outputs.trigger.service }}`.
 
@@ -66,21 +75,21 @@ Runs automatically when a context lake entity changes.
 }
 ```
 
-| Field | Description |
-|---|---|
-| `event.type` | `ENTITY_CREATED`, `ENTITY_UPDATED`, `ENTITY_DELETED`, `ANY_ENTITY_CHANGE`, or `TIMER_EXPIRED`. |
-| `event.blueprintIdentifier` | Blueprint to watch. |
-| `event.propertyIdentifier` | Required for `TIMER_EXPIRED`: the timer property to watch. |
-| `condition` | Optional. `type: "JQ"`, `expressions` (array, evaluated against the event payload directly, not through `.outputs.trigger`), `combinator` (`"and"`/`"or"`). |
-| `published` | Default `true`. Set `false` to stop the trigger from responding to events without deleting it. |
+| Field                       | Description                                                                                                                                                 |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `event.type`                | `ENTITY_CREATED`, `ENTITY_UPDATED`, `ENTITY_DELETED`, `ANY_ENTITY_CHANGE`, or `TIMER_EXPIRED`.                                                              |
+| `event.blueprintIdentifier` | Blueprint to watch.                                                                                                                                         |
+| `event.propertyIdentifier`  | Required for `TIMER_EXPIRED`: the timer property to watch.                                                                                                  |
+| `condition`                 | Optional. `type: "JQ"`, `expressions` (array, evaluated against the event payload directly, not through `.outputs.trigger`), `combinator` (`"and"`/`"or"`). |
+| `published`                 | Default `true`. Set `false` to stop the trigger from responding to events without deleting it.                                                              |
 
 Event data varies by event type:
 
-| Event | `diff.before` | `diff.after` |
-|---|---|---|
-| `ENTITY_CREATED` | `null` | entity after creation |
-| `ENTITY_UPDATED` | entity before | entity after |
-| `ENTITY_DELETED` | entity before deletion | `null` |
+| Event            | `diff.before`          | `diff.after`          |
+| ---------------- | ---------------------- | --------------------- |
+| `ENTITY_CREATED` | `null`                 | entity after creation |
+| `ENTITY_UPDATED` | entity before          | entity after          |
+| `ENTITY_DELETED` | entity before deletion | `null`                |
 
 Outputs: `{{ .outputs.trigger.action }}` (`CREATE`/`UPDATE`/`DELETE`),
 `{{ .outputs.trigger.diff.after.identifier }}`,
@@ -111,15 +120,15 @@ doesn't have a dedicated node type.
 }
 ```
 
-| Field | Description |
-|---|---|
-| `url` | Required. |
-| `method` | `GET`, `POST`, `PUT`, `PATCH`, `DELETE`. Default `POST`. |
-| `headers`, `body` | Optional. |
-| `agent` | Route the request through the [Port Execution Agent](https://docs.port.io/workflows/build-workflows/action-nodes/port-execution-agent) to reach a private network. Default `false`. |
-| `synchronized` | Default `true`: the node waits for the response, which becomes `response.data`/`response.status`. Set `false` to fire-and-forget; the external system must then call Port's API to mark the node run complete. |
-| `onTimeout` | `"fail"` (default) or `"continue"` (mark the node successful with `{ timeout: true }` if synchronous, or leave it in progress for a callback if asynchronous). |
-| `onFailure` | `"terminate"` (default, stops the run) or `"continue"`. |
+| Field             | Description                                                                                                                                                                                                    |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `url`             | Required.                                                                                                                                                                                                      |
+| `method`          | `GET`, `POST`, `PUT`, `PATCH`, `DELETE`. Default `POST`.                                                                                                                                                       |
+| `headers`, `body` | Optional.                                                                                                                                                                                                      |
+| `agent`           | Route the request through the [Port Execution Agent](https://docs.port.io/workflows/build-workflows/action-nodes/port-execution-agent) to reach a private network. Default `false`.                            |
+| `synchronized`    | Default `true`: the node waits for the response, which becomes `response.data`/`response.status`. Set `false` to fire-and-forget; the external system must then call Port's API to mark the node run complete. |
+| `onTimeout`       | `"fail"` (default) or `"continue"` (mark the node successful with `{ timeout: true }` if synchronous, or leave it in progress for a callback if asynchronous).                                                 |
+| `onFailure`       | `"terminate"` (default, stops the run) or `"continue"`.                                                                                                                                                        |
 
 Response: `{{ .outputs.call_api.response.data }}`,
 `{{ .outputs.call_api.response.status }}`.
@@ -155,14 +164,14 @@ specify.
 }
 ```
 
-| Field | Description |
-|---|---|
-| `blueprintIdentifier` | Required. |
-| `mapping.identifier` | If omitted, Port auto-generates one. |
-| `mapping.title`, `mapping.icon` | Optional. |
-| `mapping.team` | String or array of team identifiers. |
+| Field                                     | Description                                                                                                                                                                     |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `blueprintIdentifier`                     | Required.                                                                                                                                                                       |
+| `mapping.identifier`                      | If omitted, Port auto-generates one.                                                                                                                                            |
+| `mapping.title`, `mapping.icon`           | Optional.                                                                                                                                                                       |
+| `mapping.team`                            | String or array of team identifiers.                                                                                                                                            |
 | `mapping.properties`, `mapping.relations` | Objects keyed by property/relation identifier. A multi-relation takes an array, or a JQ expression that evaluates to one (`"{{ .outputs.trigger.dependencies \| fromjson }}"`). |
-| `onFailure` | `"terminate"` (default) or `"continue"`. |
+| `onFailure`                               | `"terminate"` (default) or `"continue"`.                                                                                                                                        |
 
 Response: `{{ .outputs.create_entity.response.data }}`.
 
@@ -192,17 +201,105 @@ call to those providers, it gets you built-in auth and status reporting.
 }
 ```
 
-| Field | Description |
-|---|---|
-| `installationId` | Required. The integration installation ID. |
-| `integrationProvider` | Required. `"github-ocean"` for GitHub Actions. |
-| `integrationInvocationType` | Required. `"dispatch_workflow"`. |
-| `integrationActionExecutionProperties.org`/`repo`/`workflow` | Required for GitHub: org/user, repo, and the workflow filename (must accept `workflow_dispatch`) or ID. |
-| `integrationActionExecutionProperties.workflowInputs` | Object of inputs. GitHub Actions inputs are always strings, use `| tostring` on non-string JQ values. |
-| `integrationActionExecutionProperties.reportWorkflowStatus` | When `true`, Port monitors the triggered run and updates the node's status when it finishes. **Not** `reportStatus`. |
+| Field                                  | Description                                                                      |
+| -------------------------------------- | -------------------------------------------------------------------------------- |
+| `installationId`                       | Required. The integration installation ID.                                       |
+| `integrationProvider`                  | Required. Provider identifier, e.g. `"github-ocean"`, `"claude-managed-agents"`. |
+| `integrationInvocationType`            | Required. The action to invoke on the provider.                                  |
+| `integrationActionExecutionProperties` | Provider- and action-specific properties.                                        |
 
 Do not use a hypothetical `GITHUB_WORKFLOW` type, GitHub dispatches go
 through `INTEGRATION_ACTION`.
+
+#### GitHub (`github-ocean`)
+
+Set `integrationInvocationType: "dispatch_workflow"`.
+
+| Property                | Description                                                                                                          |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `org`/`repo`/`workflow` | Required: org/user, repo, and the workflow filename (must accept `workflow_dispatch`) or ID.                         |
+| `workflowInputs`        | Object of inputs. GitHub Actions inputs are always strings, use `\| tostring` on non-string JQ values.               |
+| `reportWorkflowStatus`  | When `true`, Port monitors the triggered run and updates the node's status when it finishes. **Not** `reportStatus`. |
+
+#### Claude managed agents (`claude-managed-agents`)
+
+Requires the [Claude Managed Agents integration](https://docs.port.io/agent-management/external-agents/claude-managed-agents) installed in your Port organization.
+
+| `integrationInvocationType` | Description                                                                                                          |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `create_agent`              | Creates a new Claude managed agent and registers it in the catalog.                                                  |
+| `trigger_agent`             | Starts a new session or continues an existing idle session, then sends a prompt to the agent.                        |
+| `update_agent`              | Updates an existing agent's name, model, system prompt, or config. At least one field besides `agentId` must be set. |
+| `archive_agent`             | Permanently archives an agent. Irreversible.                                                                         |
+| `create_environment`        | Creates a new Claude managed environment and registers it in the catalog.                                            |
+
+**`create_agent` properties**
+
+| Property       | Description                                                                                                |
+| -------------- | ---------------------------------------------------------------------------------------------------------- |
+| `name`         | Required. Agent name.                                                                                      |
+| `model`        | Required. Claude model ID (e.g. `"claude-sonnet-4-5"`).                                                    |
+| `systemPrompt` | Optional. The agent's system prompt.                                                                       |
+| `config`       | Optional. Object passed to the Anthropic agents API (e.g. `tools`, `mcp_servers`, `multiagent`, `skills`). |
+
+**`trigger_agent` properties**
+
+| Property              | Description                                                                                                                                               |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `agentId`             | Required. The agent to trigger.                                                                                                                           |
+| `environmentId`       | Required when starting a new session. Ignored when `sessionId` is provided.                                                                               |
+| `prompt`              | Required. The user message to send.                                                                                                                       |
+| `sessionId`           | An existing idle session to continue. When provided, `environmentId` and `config` are ignored.                                                            |
+| `reportSessionStatus` | When `true`, the node waits for the session to reach a terminal state via webhook. Requires a webhook configured on the integration. Defaults to `false`. |
+| `config`              | Optional. Session creation parameters (vault IDs, resources, metadata). Ignored when `sessionId` is provided.                                             |
+
+**`update_agent` properties**
+
+| Property       | Description                                      |
+| -------------- | ------------------------------------------------ |
+| `agentId`      | Required. The agent to update.                   |
+| `name`         | Optional. New agent name.                        |
+| `model`        | Optional. New model ID.                          |
+| `systemPrompt` | Optional. New system prompt.                     |
+| `config`       | Optional. Object merged into the agent's config. |
+
+At least one of `name`, `model`, `systemPrompt`, or `config` must be set.
+
+**`archive_agent` properties**
+
+| Property  | Description                     |
+| --------- | ------------------------------- |
+| `agentId` | Required. The agent to archive. |
+
+**`create_environment` properties**
+
+| Property      | Description                                                                          |
+| ------------- | ------------------------------------------------------------------------------------ |
+| `name`        | Required. Environment name (1–256 characters).                                       |
+| `description` | Optional. Human-readable description.                                                |
+| `scope`       | Optional. Scope identifier (e.g. an organisation ID).                                |
+| `config`      | Optional. Object passed to the Anthropic environments API (e.g. container settings). |
+
+Node output: `environmentId` — the ID of the newly created environment. Pass it to a `trigger_agent` node to start a session.
+
+```json
+{
+  "identifier": "trigger_claude",
+  "config": {
+    "type": "INTEGRATION_ACTION",
+    "installationId": "my-claude-installation-id",
+    "integrationProvider": "claude-managed-agents",
+    "integrationInvocationType": "trigger_agent",
+    "integrationActionExecutionProperties": {
+      "agentId": "{{ .outputs.trigger.agentId.identifier }}",
+      "environmentId": "{{ .outputs.trigger.environmentId.identifier }}",
+      "prompt": "{{ .outputs.trigger.prompt }}",
+      "reportSessionStatus": true
+    },
+    "onFailure": "terminate"
+  }
+}
+```
 
 ### `KAFKA`
 
@@ -215,7 +312,10 @@ Kafka topic provisioned by Port support.
   "identifier": "publish",
   "config": {
     "type": "KAFKA",
-    "payload": { "event": "deployed", "service": "{{ .outputs.trigger.service }}" },
+    "payload": {
+      "event": "deployed",
+      "service": "{{ .outputs.trigger.service }}"
+    },
     "onFailure": "terminate"
   }
 }
@@ -237,21 +337,26 @@ a GitHub repository or PR. The workflow pauses until the agent finishes.
   "config": {
     "type": "CURSOR_AGENT",
     "apiKey": "{{ .secrets[\"CURSOR_API_KEY\"] }}",
-    "prompt": { "text": "Fix the failing tests in {{ .outputs.trigger.service }}" },
-    "source": { "repository": "https://github.com/my-org/my-repo", "ref": "main" },
+    "prompt": {
+      "text": "Fix the failing tests in {{ .outputs.trigger.service }}"
+    },
+    "source": {
+      "repository": "https://github.com/my-org/my-repo",
+      "ref": "main"
+    },
     "target": { "autoCreatePr": true }
   }
 }
 ```
 
-| Field | Description |
-|---|---|
-| `apiKey` | Required. Store the Cursor API key as a Port secret and reference it, don't inline it. |
-| `prompt.text` | Required. Task instructions. |
-| `source.repository` or `source.prUrl` | One required. `prUrl` ignores `repository`/`ref`. |
-| `source.ref` | Branch, tag, or commit to use as the base. |
-| `model` | E.g. `"claude-sonnet-4-5"`. Omit for the default model. |
-| `target.autoCreatePr`, `target.branchName` | Optional. |
+| Field                                      | Description                                                                            |
+| ------------------------------------------ | -------------------------------------------------------------------------------------- |
+| `apiKey`                                   | Required. Store the Cursor API key as a Port secret and reference it, don't inline it. |
+| `prompt.text`                              | Required. Task instructions.                                                           |
+| `source.repository` or `source.prUrl`      | One required. `prUrl` ignores `repository`/`ref`.                                      |
+| `source.ref`                               | Branch, tag, or commit to use as the base.                                             |
+| `model`                                    | E.g. `"claude-sonnet-4-5"`. Omit for the default model.                                |
+| `target.autoCreatePr`, `target.branchName` | Optional.                                                                              |
 
 Outputs (camelCase): `{{ .outputs.cursor_task.agentId }}`,
 `{{ .outputs.cursor_task.status }}` (`FINISHED`/`ERROR`),
@@ -289,15 +394,15 @@ agent); `AI` is a general-purpose invocation you configure inline.
 }
 ```
 
-| Field | `AI_AGENT` | `AI` |
-|---|---|---|
-| `agentIdentifier` | Required | - |
-| `userPrompt` | Required | Required |
-| `systemPrompt` | - | Optional |
-| `tools` | Configured on the agent | Array of exact tool names or regex patterns (e.g. `"sentry_.*"`); defaults to all native tools plus all `mcpServers` tools, but prefer an explicit list in workflows. See the [available tools list](https://docs.port.io/ai-interfaces/port-ai/overview?execution-modes=manual#available-tools). |
-| `mcpServers` | Optional (up to 5) | Optional (up to 5), `[{ "identifier": "<_mcp_server entity id>" }]` |
-| `provider`, `model` | Both set or both omitted | Both set or both omitted |
-| `outputSchema` | Optional | Optional |
+| Field               | `AI_AGENT`               | `AI`                                                                                                                                                                                                                                                                                              |
+| ------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `agentIdentifier`   | Required                 | -                                                                                                                                                                                                                                                                                                 |
+| `userPrompt`        | Required                 | Required                                                                                                                                                                                                                                                                                          |
+| `systemPrompt`      | -                        | Optional                                                                                                                                                                                                                                                                                          |
+| `tools`             | Configured on the agent  | Array of exact tool names or regex patterns (e.g. `"sentry_.*"`); defaults to all native tools plus all `mcpServers` tools, but prefer an explicit list in workflows. See the [available tools list](https://docs.port.io/ai-interfaces/port-ai/overview?execution-modes=manual#available-tools). |
+| `mcpServers`        | Optional (up to 5)       | Optional (up to 5), `[{ "identifier": "<_mcp_server entity id>" }]`                                                                                                                                                                                                                               |
+| `provider`, `model` | Both set or both omitted | Both set or both omitted                                                                                                                                                                                                                                                                          |
+| `outputSchema`      | Optional                 | Optional                                                                                                                                                                                                                                                                                          |
 
 Response: `{{ .outputs.node_id.response }}`,
 `{{ .outputs.node_id.invocationIdentifier }}`.
@@ -340,7 +445,11 @@ path is taken, otherwise the `fallback` connection (if any) runs.
   "config": {
     "type": "CONDITION",
     "outlets": [
-      { "identifier": "prod", "title": "Production", "expression": ".outputs.trigger.environment == \"production\"" }
+      {
+        "identifier": "prod",
+        "title": "Production",
+        "expression": ".outputs.trigger.environment == \"production\""
+      }
     ]
   }
 }
@@ -374,7 +483,11 @@ human-in-the-loop gates.
     "description": "Approve or decline the production deployment.",
     "userInputs": {
       "properties": {
-        "reason": { "type": "string", "title": "Reason", "description": "The reason for the approve/decline." }
+        "reason": {
+          "type": "string",
+          "title": "Reason",
+          "description": "The reason for the approve/decline."
+        }
       },
       "buttons": [
         { "identifier": "approve", "label": "Approve", "variant": "PRIMARY" },
@@ -382,21 +495,31 @@ human-in-the-loop gates.
       ]
     },
     "outlets": [
-      { "evaluationMethod": "button", "identifier": "approve", "title": "Approve", "numOfResponders": 2 },
-      { "evaluationMethod": "button", "identifier": "decline", "title": "Decline", "numOfResponders": 1 }
+      {
+        "evaluationMethod": "button",
+        "identifier": "approve",
+        "title": "Approve",
+        "numOfResponders": 2
+      },
+      {
+        "evaluationMethod": "button",
+        "identifier": "decline",
+        "title": "Decline",
+        "numOfResponders": 1
+      }
     ],
     "responders": { "users": ["alice@example.com", "bob@example.com"] }
   }
 }
 ```
 
-| Field | Description |
-|---|---|
-| `userInputs.properties` | Form fields shown to responders, same schema as self-service `userInputs`. |
-| `userInputs.buttons` | Submit buttons: `identifier`, `label`, `variant` (`PRIMARY`/`SECONDARY`/`DANGER`). |
-| `outlets` | One per branch: `evaluationMethod: "button"`, `identifier` (must match a button), `numOfResponders` (positive integer). Port tallies responses per button and takes the first outlet whose threshold is met. |
-| `responders.users` | Emails of who is notified and allowed to respond. Each responder can respond once. |
-| `notifications` | Optional array of `email` (with `fields`) or `webhook` (`url`, `method`, `headers`, `body`) targets, notified in addition to `responders`. |
+| Field                   | Description                                                                                                                                                                                                  |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `userInputs.properties` | Form fields shown to responders, same schema as self-service `userInputs`.                                                                                                                                   |
+| `userInputs.buttons`    | Submit buttons: `identifier`, `label`, `variant` (`PRIMARY`/`SECONDARY`/`DANGER`).                                                                                                                           |
+| `outlets`               | One per branch: `evaluationMethod: "button"`, `identifier` (must match a button), `numOfResponders` (positive integer). Port tallies responses per button and takes the first outlet whose threshold is met. |
+| `responders.users`      | Emails of who is notified and allowed to respond. Each responder can respond once.                                                                                                                           |
+| `notifications`         | Optional array of `email` (with `fields`) or `webhook` (`url`, `method`, `headers`, `body`) targets, notified in addition to `responders`.                                                                   |
 
 Connections need `sourceOutletIdentifier` just like `CONDITION`:
 
