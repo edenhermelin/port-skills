@@ -231,6 +231,7 @@ Requires the [Claude Managed Agents integration](https://docs.port.io/agent-mana
 | `trigger_agent`             | Starts a new session or continues an existing idle session, then sends a prompt to the agent.                        |
 | `update_agent`              | Updates an existing agent's name, model, system prompt, or config. At least one field besides `agentId` must be set. |
 | `archive_agent`             | Permanently archives an agent. Irreversible.                                                                         |
+| `create_environment`        | Creates a new Claude managed environment and registers it in the catalog.                                            |
 
 **`create_agent` properties**
 
@@ -269,6 +270,17 @@ At least one of `name`, `model`, `systemPrompt`, or `config` must be set.
 | Property  | Description                     |
 | --------- | ------------------------------- |
 | `agentId` | Required. The agent to archive. |
+
+**`create_environment` properties**
+
+| Property      | Description                                                                          |
+| ------------- | ------------------------------------------------------------------------------------ |
+| `name`        | Required. Environment name (1–256 characters).                                       |
+| `description` | Optional. Human-readable description.                                                |
+| `scope`       | Optional. Scope identifier (e.g. an organisation ID).                                |
+| `config`      | Optional. Object passed to the Anthropic environments API (e.g. container settings). |
+
+Node output: `environmentId` — the ID of the newly created environment. Pass it to a `trigger_agent` node to start a session.
 
 ```json
 {
